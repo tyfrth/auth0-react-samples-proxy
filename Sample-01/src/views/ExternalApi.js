@@ -115,7 +115,7 @@ export const ExternalApiComponent = () => {
 
         <h1>External API</h1>
         <p className="lead">
-          Ping an external API by clicking the button below.
+          Ping an external API by clicking the 'Ping API' button below.
         </p>
 
         <p>
@@ -123,6 +123,17 @@ export const ExternalApiComponent = () => {
           if you run <code>npm run dev</code>. An access token is sent as part
           of the request's `Authorization` header and the API will validate it
           using the API's audience value.
+        </p>
+
+        <p className="lead">
+          Change your nickname profile attribute by clicking the 'Change Nickname' button below.
+        </p>
+
+        <p>
+          This will call the local API on port 3001 that would have been started
+          if you run <code>npm run dev</code>. Assuming you've properly configured the Node Management CLient, an access token is sent as part
+          of the request's `Authorization` header and the API will validate it
+          using the API's audience value - The API then proxies the request to your tenant's Management in order to change your user's nickname. 
         </p>
 
         {!audience && (
@@ -178,6 +189,15 @@ export const ExternalApiComponent = () => {
           disabled={!audience}
         >
           Ping API
+        </Button>
+        <Button
+          style={{marginLeft: '10px'}}
+          color="primary"
+          className="mt-5"
+          onClick={callApi}
+          disabled={!audience}
+        >
+          Change Nickname
         </Button>
       </div>
 
