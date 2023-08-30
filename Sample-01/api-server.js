@@ -4,8 +4,11 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const { auth } = require("express-oauth2-jwt-bearer");
 const authConfig = require("./src/auth_config.json");
+const bodyParser = require("body-parser")
+require('dotenv').config(); // Load the .env variables
+
+//auth0 management client
 const ManagementClient = require("auth0").ManagementClient;
-require('dotenv').config();
 
 const app = express();
 
@@ -29,9 +32,9 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({ origin: appOrigin }));
 // parse application/x-www-form-urlencoded
-// app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
-// app.use(bodyParser.json());
+app.use(bodyParser.json());
 
 var auth0 = new ManagementClient({
   domain: process.env.DOMAIN,
@@ -48,9 +51,11 @@ const checkJwt = auth({
 });
 
 app.get("/api/external", checkJwt, (req, res) => {
-  res.send({
-    msg: "Your access token was successfully validated!",
-  });
+  // res.send({
+  //   msg: "Your access token was successfully validated!",
+  // });
+  res.json({ message: `Hello ${req.auth.payload.sub}, your access token was successfully validated!` });
+
 });
 
 app.post('/api/external/nickname', checkJwt, (req, res) => {
@@ -61,7 +66,7 @@ app.post('/api/external/nickname', checkJwt, (req, res) => {
   auth0.users.update({id: req.auth.payload.sub}, data, function (err, user) {
     if (err) {
       console.log(err)
-      res.json({message: `Unable to successfully set new nickname!`})
+      res.json({message: `Unable to successfully set new nickname! - Check tenant logs for possible errors`})
     } else {
       console.log(user)
       res.json({message: `Your new nickname ${user.nickname} has been set successfully!`})

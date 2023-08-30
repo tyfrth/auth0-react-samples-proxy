@@ -14,6 +14,8 @@ export const ExternalApiComponent = () => {
     error: null,
   });
 
+  const [inputValue, setInputValue] = useState('');
+
   const {
     getAccessTokenSilently,
     loginWithPopup,
@@ -55,6 +57,13 @@ export const ExternalApiComponent = () => {
   };
 
   const callApi = async () => {
+
+    setState({
+      ...state,
+      showResult: false,
+      apiMessage: null,
+    });
+
     try {
       const token = await getAccessTokenSilently();
 
@@ -78,6 +87,47 @@ export const ExternalApiComponent = () => {
       });
     }
   };
+
+  function handleInputChange(event) {
+    setInputValue(event.target.value);
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+  
+    setState({
+      ...state,
+      showResult: false,
+      apiMessage: null,
+    });
+  
+    try {
+      const token = await getAccessTokenSilently();
+  
+      const response = await fetch(`${apiOrigin}/api/external/nickname`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({nickname: inputValue})
+      });
+  
+      const responseData = await response.json();
+  
+      setState({
+        ...state,
+        showResult: true,
+        apiMessage: responseData,
+      });
+    } catch (error) {
+      setState({
+        ...state,
+        error: error.error,
+      });
+    }
+    setInputValue('');
+  }
 
   const handle = (e, fn) => {
     e.preventDefault();
@@ -130,10 +180,10 @@ export const ExternalApiComponent = () => {
         </p>
 
         <p>
-          This will call the local API on port 3001 that would have been started
-          if you run <code>npm run dev</code>. Assuming you've properly configured the Node Management CLient, an access token is sent as part
+          This will call the the same local API on port 3001 that would have been started
+          if you run <code>npm run dev</code>. An access token is sent as part
           of the request's `Authorization` header and the API will validate it
-          using the API's audience value - The API then proxies the request to your tenant's Management in order to change your user's nickname. 
+          using the API's audience value - Assuming you've properly configured the Node Management Client, the API then proxies the request to your tenant's Management API in order to change your user's nickname. 
         </p>
 
         {!audience && (
@@ -190,15 +240,28 @@ export const ExternalApiComponent = () => {
         >
           Ping API
         </Button>
-        <Button
-          style={{marginLeft: '10px'}}
-          color="primary"
-          className="mt-5"
-          onClick={callApi}
-          disabled={!audience}
-        >
-          Change Nickname
-        </Button>
+        
+         <div
+          style={{display: "flex", alignItems: 'left', justifyContent: 'left', marginTop: '10px'}}>
+          <form onSubmit={handleSubmit}>
+            <label>
+              <input 
+              type="text" 
+              value={inputValue} 
+              onChange={handleInputChange} 
+              placeholder="Enter new nickname"
+              style={{height: '40px'}}
+              />
+            </label>
+            <Button 
+            type="submit"
+            color="primary"
+            style={{marginLeft: '5px', height: '40px'}}
+            >
+              Submit
+            </Button>
+          </form>
+        </div>
       </div>
 
       <div className="result-block-container">

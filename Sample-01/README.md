@@ -44,6 +44,16 @@ To do this, first copy `src/auth_config.json.example` into a new file in the sam
 
 **Note**: Do not specify a value for `audience` here if you do not wish to use the API part of the sample.
 
+Additonally - If you wish to use the `ManagementClient` portion of the API to proxy calls to your tenant's Management API you will need to create a `.env` file with the following values:
+
+```
+DOMAIN={YOUR AUTH0 DOMAIN}
+MGMNT_AUDIENCE={YOUR AUTH0 MANAGEMENT API_IDENTIFIER}
+CLIENT_ID={YOUR AUTH0 M2M CLIENT ID}
+CLIENT_SECRET={YOUR AUTH0 M2M CLIENT SECRET}
+```
+For more on creating a Machine-to-Machine app for this purpose, see Auth0 documentaion on [Registering Machine-to-Machine Applications](https://auth0.com/docs/get-started/auth0-overview/create-applications/machine-to-machine-apps). 
+
 ## Run the sample
 
 ### Compile and hot-reload for development
