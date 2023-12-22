@@ -31,9 +31,7 @@ if (
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(cors({ origin: appOrigin }));
-// parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
-// parse application/json
 app.use(bodyParser.json());
 
 var auth0 = new ManagementClient({
@@ -51,11 +49,7 @@ const checkJwt = auth({
 });
 
 app.get("/api/external", checkJwt, (req, res) => {
-  // res.send({
-  //   msg: "Your access token was successfully validated!",
-  // });
   res.json({ message: `Hello ${req.auth.payload.sub}, your access token was successfully validated!` });
-
 });
 
 app.post('/api/external/nickname', checkJwt, (req, res) => {
@@ -70,7 +64,7 @@ app.post('/api/external/nickname', checkJwt, (req, res) => {
     } else {
       console.log(user)
       res.json({message: `Your new nickname ${user.nickname} has been set successfully!`})
-    }
+      }
       
     })
   
