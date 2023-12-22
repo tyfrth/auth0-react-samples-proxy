@@ -48,10 +48,12 @@ const checkJwt = auth({
   algorithms: ["RS256"],
 });
 
+//validate access token
 app.get("/api/external", checkJwt, (req, res) => {
   res.json({ message: `Hello ${req.auth.payload.sub}, your access token was successfully validated!` });
 });
 
+//proxy request to Management API to change user's nickname
 app.post('/api/external/nickname', checkJwt, (req, res) => {
 
   const data = JSON.stringify(req.body)
