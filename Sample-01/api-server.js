@@ -59,17 +59,31 @@ app.post('/api/external/nickname', checkJwt, (req, res) => {
   const data = JSON.stringify(req.body)
   console.log(data); 
   
-  auth0.users.update({id: req.auth.payload.sub}, data, function (err, user) {
+  auth0.users.update({id: req.auth.payload.sub}, data, function(err, user) {
     if (err) {
       console.log(err)
-      res.json({message: `Unable to successfully set new nickname! - Check tenant logs for possible errors`})
+      res.json({message: `Unable to set new nickname - Check tenant logs for possible errors`})
     } else {
       console.log(user)
-      res.json({message: `Your new nickname ${user.nickname} has been set successfully!`})
+      res.json({message: `Your new nickname ${user.nickname} has been set successfully`})
       }
-      
     })
-  
+  });
+
+  //proxy request to Management API to change a user's password
+  app.post('/api/external/password', checkJwt, (req, res) => {
+    const data = JSON.stringify(req.body)
+    console.log(data);
+
+    auth0.users.update({id: req.auth.payload.sub}, data, function(err, user) {
+      if (err) {
+        console.log(err)
+        res.json({message: `Unable to set new password - Check tenant logs for possible errors`})
+      } else {
+        console.log(user)
+        res.json({message: `New password set successfully`})
+      }
+    })
   });
 
 app.listen(port, () => console.log(`API Server listening on port ${port}`));

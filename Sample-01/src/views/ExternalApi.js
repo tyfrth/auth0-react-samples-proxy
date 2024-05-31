@@ -15,6 +15,7 @@ export const ExternalApiComponent = () => {
   });
 
   const [inputValue, setInputValue] = useState('');
+  const [passInputValue, setPassInputValue] = useState('');
 
   const {
     getAccessTokenSilently,
@@ -87,9 +88,14 @@ export const ExternalApiComponent = () => {
       });
     }
   };
+  //callApi()
 
   function handleInputChange(event) {
     setInputValue(event.target.value);
+  }
+
+  function handlePassInputChange(event) {
+    setPassInputValue(event.target.value);
   }
 
   const handleSubmit = async (event) => {
@@ -128,6 +134,45 @@ export const ExternalApiComponent = () => {
     }
     setInputValue('');
   }
+
+  //password
+  const handleSubmitPassword = async (event) => {
+    event.preventDefault();
+  
+    setState({
+      ...state,
+      showResult: false,
+      apiMessage: null,
+    });
+  
+    try {
+      const token = await getAccessTokenSilently();
+  
+      const response = await fetch(`${apiOrigin}/api/external/password`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({password: passInputValue})
+      });
+  
+      const responseData = await response.json();
+  
+      setState({
+        ...state,
+        showResult: true,
+        apiMessage: responseData,
+      });
+    } catch (error) {
+      setState({
+        ...state,
+        error: error.error,
+      });
+    }
+    setPassInputValue('');
+  }
+
 
   const handle = (e, fn) => {
     e.preventDefault();
@@ -262,6 +307,28 @@ export const ExternalApiComponent = () => {
             </Button>
           </form>
         </div>
+
+        <div
+          style={{display: "flex", alignItems: 'left', justifyContent: 'left', marginTop: '10px'}}>
+          <form onSubmit={handleSubmitPassword}>
+            <label>
+              <input 
+              type="text" 
+              value={passInputValue} 
+              onChange={handlePassInputChange} 
+              placeholder="Enter new password"
+              style={{height: '40px'}}
+              />
+            </label>
+            <Button 
+            type="submit"
+            color="primary"
+            style={{marginLeft: '5px', height: '40px'}}
+            >
+              Submit
+            </Button>
+          </form>
+        </div>
       </div>
 
       <div className="result-block-container">
@@ -277,6 +344,7 @@ export const ExternalApiComponent = () => {
     </>
   );
 };
+
 
 export default withAuthenticationRequired(ExternalApiComponent, {
   onRedirecting: () => <Loading />,
